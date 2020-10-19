@@ -22,12 +22,17 @@ The stage creation process is similar to normal stage development. Once complete
 These files are needed for the code to work. You can download them from this repository.
 
 **init.gml**: The main stage init.
+
 **update.gml**: The main stage update.
+
 **other_init.gml**: Sets up player lives
+
 **player_death.gml**: Player death handling
+
 **draw_hud.gml**: HUD Draw calls
 
 **article6**: The main enemy parent object.
+
 **article16**: The boss death object (optional, but helps to have)
 
 # Local files
@@ -35,6 +40,9 @@ These files can be added to the boss template and work if the above files are in
 Some template files are included in this repository.
 
 **load.gml** Sets up sprite offsets
+
 **user_event1.gml** Called when the stage is started
+
 **user_event2.gml** Called when the stage updates every frame.
+
 **user_event6.gml** Called when an enemy is updated every frame.
