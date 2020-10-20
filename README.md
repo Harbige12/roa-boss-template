@@ -1,4 +1,4 @@
-# roa-boss-template
+# RoA Boss Template
 A guide and code repository on how to make bosses for Rivals of Aether.
 
 By Harbige12.
