@@ -1,0 +1,5 @@
+# ignore the following files that are constantly changed
+BossTemplate/scripts/load.gml
+BossTemplate/scripts/user_event1.gml
+BossTemplate/scripts/user_event2.gml
+BossTemplate/scripts/user_event6.gml
