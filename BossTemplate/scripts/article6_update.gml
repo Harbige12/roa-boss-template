@@ -31,7 +31,7 @@ if !_init {
     enem_id = spawn_variables[0];
     //player_controller = 1;
     custom_behavior(EN_EVENT.INIT);
-    ignores_ground = can_be_grounded;
+    ignores_ground = !can_be_grounded;
     set_sprite_from_state(enem_id, state);
     _init = 1;
     //print_debug(get_attack_name(attacks[0]));
@@ -680,9 +680,11 @@ else if !down_down can_fallthrough = 0;
 #define physics_update() //Physics updates, every frame
 horiz_col = false;
 vert_col = false;
-is_free = (ignores_ground) ? (vsp < 0 || (!place_meet_solid(x,y+2) && !(get_plat(x,y+2) != noone && !can_fallthrough))) : true;
+is_free = (!ignores_ground) ? (vsp < 0 || (!place_meet_solid(x,y+2) && !(get_plat(x,y+2) != noone && !can_fallthrough))) : true;
 if (!ignores_ground) {
-    if ((get_plat(x,y+2) && !can_fallthrough)) 
+    if ((get_plat(x,y+2) && can_fallthrough)) 
+        can_be_grounded = false;
+    else
         can_be_grounded = false;
 }
 

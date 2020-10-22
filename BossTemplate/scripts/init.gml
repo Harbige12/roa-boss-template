@@ -53,4 +53,4 @@ hud_healthbar_yspacing = 20;
 hud_bossname_xoffset = 0
 hud_bossname_yoffset = 32
 hud_percent_xoffset = 80
-hud_percent_yoffset = 32
+hud_percent_yoffset = 8

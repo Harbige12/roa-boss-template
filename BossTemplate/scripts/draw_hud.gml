@@ -33,9 +33,10 @@ repeat ds_list_size(active_bosses) {
         show_percent = hitpoints_max <= 0;
         hbar_percent = percent;
         
-        if (show_percent)
+        if (show_percent) {
+            hbar_x = (view_get_wview() / 2) - (sprite_get_width(obj_stage_main.hud_percentbar_spr) / 2);
             hbar_yoff = 68 * i;
-        
+        }
         if (hitstun > 15 && hitpause > 0) {
             hbar_shake_x = round(-2 + random_func(1, 4, true) / 2) * 2;
             hbar_shake_y = round(-2 + random_func(1, 4, true) / 2) * 2;
@@ -122,7 +123,7 @@ repeat ds_list_size(active_bosses) {
             draw_set_halign(fa_left)
             draw_text_trans_outline(hbar_x + obj_stage_main.hud_percent_xoffset + 6, hbar_y + obj_stage_main.hud_percent_yoffset + 8, "%", 1, -1, 1, 1, 0, c_white, c_black, 1);
             draw_set_halign(fa_right)
-            draw_text_trans_outline(xx + 320 - 32, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1);
+            draw_text_trans_outline(xx - 32, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1);
         }
     }
     i++;

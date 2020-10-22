@@ -15,7 +15,7 @@ circle_sprite = asset_get("fx_ko_circle");
 with (obj_stage_main) music_stop();
 space_alpha = 1;
 
-depth = 4;
+depth = 11;
 
 with (pHitBox) {
     if (player == obj_stage_main.player) {

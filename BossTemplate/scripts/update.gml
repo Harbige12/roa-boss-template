@@ -123,7 +123,6 @@ if (!the_end)
 //Battle init check
 if (!_init) {
 	user_event(1);
-	music_stop();
 	_init = true;
 }
 
