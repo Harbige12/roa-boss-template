@@ -33,6 +33,7 @@ if !_init {
     custom_behavior(EN_EVENT.INIT);
     ignores_ground = !can_be_grounded;
     set_sprite_from_state(enem_id, state);
+    mask_index =  collision_box; // Collision Mask
     _init = 1;
     //print_debug(get_attack_name(attacks[0]));
 } else {

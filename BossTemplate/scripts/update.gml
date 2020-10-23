@@ -168,6 +168,7 @@ if (active_enemy_timer <= active_enemy_timer_max) {
 var controlled_players = 0;
 with (oPlayer) {
     if (clone) continue;
+    if (get_gameplay_time() == 2) ds_list_add(other.view_follow, id);
 	if (!variable_instance_exists(id, "temp_level")) {
 		controlled_players ++;
 	}
