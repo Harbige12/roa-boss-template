@@ -1075,7 +1075,7 @@ if (hitpause <= 0) {
         }
     }
     
-    for (var j = 1; j <= hg_num_hitboxes; j += 1) if window == hg_window[j] && window_timer == hg_window_frame[j] {
+    for (var j = 1; j <= hg_num_hitboxes; j += 1) if window == hg_window[j] && window_timer == hg_window_frame[j] + 1 {
         //custom_behavior(EN_EVENT.SET_ATTACK)
         var hitb = create_hitbox(attack,j,round(x)+hg_x[j]*spr_dir,round(y)+hg_y[j]);
         hitb.type = hg_type[j] == 0 ? 1 : hg_type[j];
@@ -1534,9 +1534,17 @@ with obj_stage_main { //Main stage script object
     }
     if (other.ag_num_windows > 0)
     for (var w = 1; w <= other.ag_num_windows; w++) {
-        for (var i = 0; i <= 72; i++) {
+        for (var i = 0; i <= 13; i++) {
             set_window_value(_attack, w, i, 0);
         }
+        set_window_value(_attack, w, 24, 0);
+        set_window_value(_attack, w, 26, 0);
+        set_window_value(_attack, w, 31, 0);
+        set_window_value(_attack, w, 32, 0);
+        set_window_value(_attack, w, 57, 0);
+        set_window_value(_attack, w, 58, 0);
+        set_window_value(_attack, w, 59, 0);
+        set_window_value(_attack, w, 60, 0);
     }
     if (other.hg_num_hitboxes > 0)
     for (var w = 1; w <= other.hg_num_hitboxes; w++) {

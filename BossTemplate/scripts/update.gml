@@ -36,8 +36,6 @@ with asset_get("pHitBox") if "hit_owner" in self {
             custom_behavior(EN_EVENT.SET_ATTACK)
         }
         set_hitboxes(id);
-        with hit_owner 
-            reset_attack_grid(other.attack);
     }
     hbox_group = -1;
     if (place_meeting(x, y, oPlayer)) {
@@ -396,6 +394,7 @@ with (obj_stage_main) {
         case 2:  _hbox.sprite_index = asset_get("hitbox_rounded_rectangle"); break;
     }
     _hbox.mask_index = _hbox.sprite_index;
+    _hbox.image_alpha = 0.5;
     _hbox.hit_priority = get_hitbox_value(_hbox.attack, par, HG_PRIORITY);
     _hbox.damage = get_hitbox_value(_hbox.attack, par, HG_DAMAGE);
     _hbox.kb_angle = get_hitbox_value(_hbox.attack, par, HG_ANGLE);
@@ -423,8 +422,17 @@ with (obj_stage_main) {
     _hbox.force_flinch = get_hitbox_value(_hbox.attack, _hbox.hbox_num, HG_FORCE_FLINCH);
     _hbox.bkb_final = get_hitbox_value(_hbox.attack, _hbox.hbox_num, HG_FINAL_BASE_KNOCKBACK);
     _hbox.throws_rock = get_hitbox_value(_hbox.attack, _hbox.hbox_num, HG_THROWS_ROCK);
+    if (_hbox.kb_angle == 361)
+        _hbox.draw_angle = 45
+    else
+        _hbox.draw_angle = _hbox.kb_angle
+    if (_hbox.hit_owner.spr_dir == -1)
+        _hbox.draw_angle = (180 - _hbox.draw_angle)
+    if (_hbox.hit_flipper == 5)
+        _hbox.draw_angle = (180 - _hbox.draw_angle)
     
     if (_hbox.type == 2) {
+    	_hbox.image_alpha = 1;
         _hbox.hbox_group = -1;
         _hbox.sprite_index = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_SPRITE) != 0 ? get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_SPRITE) : asset_get("empty_sprite");
         _hbox.mask_index = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK) == -1 ? sprite_index : get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK);
@@ -456,9 +464,17 @@ with obj_stage_main { //Main stage script object
     }
     if (other.ag_num_windows > 0)
     for (var w = 1; w <= other.ag_num_windows; w++) {
-        for (var i = 0; i <= 72; i++) {
+        for (var i = 0; i <= 13; i++) {
             set_window_value(_attack, w, i, 0);
         }
+        set_window_value(_attack, w, 24, 0);
+        set_window_value(_attack, w, 26, 0);
+        set_window_value(_attack, w, 31, 0);
+        set_window_value(_attack, w, 32, 0);
+        set_window_value(_attack, w, 57, 0);
+        set_window_value(_attack, w, 58, 0);
+        set_window_value(_attack, w, 59, 0);
+        set_window_value(_attack, w, 60, 0);
     }
     if (other.hg_num_hitboxes > 0)
     for (var w = 1; w <= other.hg_num_hitboxes; w++) {
