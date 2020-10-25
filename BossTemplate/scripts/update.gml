@@ -217,8 +217,8 @@ with (oPlayer) {
         }
         if (instance_exists(cpu_target)) {
             //Check for alive bosses
-            x = cpu_target.bbox_left + abs(cpu_target.bbox_right - cpu_target.bbox_left);
-            y = cpu_target.bbox_top + abs(cpu_target.bbox_bottom - cpu_target.bbox_top);
+            x = cpu_target.bbox_left + abs(cpu_target.bbox_right - cpu_target.bbox_left) / 2;
+            y = cpu_target.bbox_top + abs(cpu_target.bbox_bottom - cpu_target.bbox_top) / 2;
             hsp = cpu_target.hsp;
             vsp = cpu_target.vsp;
         }
@@ -434,11 +434,11 @@ with (obj_stage_main) {
     if (_hbox.type == 2) {
     	_hbox.image_alpha = 1;
         _hbox.hbox_group = -1;
+        _hbox.mask_index = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK) == -1 ? _hbox.sprite_index : get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK);
         _hbox.sprite_index = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_SPRITE) != 0 ? get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_SPRITE) : asset_get("empty_sprite");
-        _hbox.mask_index = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK) == -1 ? sprite_index : get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK);
         _hbox.img_spd = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_ANIM_SPEED);
         if (_hbox.hsp == 0)
-            _hbox.hsp = get_hitbox_value(_hbox.attack, _hbox.hbox_num, HG_PROJECTILE_HSPEED) * _hbox.spr_dir;
+            _hbox.hsp = get_hitbox_value(_hbox.attack, _hbox.hbox_num, HG_PROJECTILE_HSPEED) * _hbox.hit_owner.spr_dir;
         if (_hbox.vsp == 0)
             _hbox.vsp = get_hitbox_value(_hbox.attack, _hbox.hbox_num, HG_PROJECTILE_VSPEED);
         _hbox.grav = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_GRAVITY);

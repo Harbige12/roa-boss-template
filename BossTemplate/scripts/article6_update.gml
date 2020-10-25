@@ -1009,26 +1009,26 @@ if (hitpause <= 0) {
     //Speeds
     switch ag_window_hspeed_type[window] {
         case 2:
-            if window_timer == 0 hsp = ag_window_hspeed[window]*spr_dir;
+            if window_timer == 1 hsp = ag_window_hspeed[window]*spr_dir;
             break;
         case 1:
             hsp = ag_window_hspeed[window]*spr_dir;
             break;
         default:
-            if window_timer == 0 hsp += ag_window_hspeed[window]*spr_dir;
+            if window_timer == 1 hsp += ag_window_hspeed[window]*spr_dir;
             break;
     }
 
 
     switch ag_window_vspeed_type[window] {
         case 2:
-            if window_timer == 0 vsp = ag_window_vspeed[window];
+            if window_timer == 1 vsp = ag_window_vspeed[window];
             break;
         case 1:
             vsp = ag_window_vspeed[window];
             break;
         default:
-            if window_timer == 0 vsp += ag_window_vspeed[window];
+            if window_timer == 1 vsp += ag_window_vspeed[window];
             break;
     }
     
@@ -1475,6 +1475,13 @@ if instance_exists(_hbox) && (!("hit_owner" in _hbox) || _hbox.hit_owner != id) 
                 other.flinch_time = (force_flinch == 1 && !other.is_free) || (force_flinch == 2 && other.state == PS_CROUCH) ? 15 : 0;
                 if (dumb_di_mult != 0) {
                     other.dumb_di_mult = dumb_di_mult;
+                }
+                if (camera_shake != -1) {
+                    var value_check = other.knockback_adj != 0 ? other.kb_power : kb_value+other.percent*0.12*kb_scale;
+                    if ((camera_shake == 0 && value_check >= 10) || camera_shake == 1) {
+                        shake_camera(round(max(value_check, 10)), 5);
+                    }
+                    
                 }
             }
         }
