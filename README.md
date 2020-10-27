@@ -7,6 +7,7 @@ By Harbige12.
 So you've deceded to make a boss for Rivals of Aether, huh? This guide should make it easier to create the boss of your dreams, all using stage scripting.
 
 Please check out the Wiki for documetation, and happy scripting!
+https://github.com/Harbige12/roa-boss-template/wiki
 
 # Installation
 
