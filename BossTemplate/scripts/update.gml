@@ -20,7 +20,8 @@ enum EN_EVENT {
 
 handle_cpu();
 handle_fight();
-handle_camera();
+if (get_gameplay_time() > 3)
+	handle_camera();
 handle_hitboxes();
 
 
@@ -32,8 +33,11 @@ with asset_get("pHitBox") if "hit_owner" in self {
 	}
 	if (hitbox_timer == 0) {
         with hit_owner {
-            reset_attack_grid(other.attack);
+        	var attack_p = attack;
+        	attack = other.attack
+            reset_attack_grid(attack);
             custom_behavior(EN_EVENT.SET_ATTACK)
+            attack = attack_p;
         }
         set_hitboxes(id);
     }
@@ -237,6 +241,7 @@ with (oPlayer) {
         fall_through = true;
         wrap_time = 196;
         visible = false;
+        mask_index = asset_get("empty_sprite");
         state_timer = 1;
         player_solid = false;
     }
@@ -434,7 +439,7 @@ with (obj_stage_main) {
     if (_hbox.type == 2) {
     	_hbox.image_alpha = 1;
         _hbox.hbox_group = -1;
-        _hbox.mask_index = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK) == -1 ? _hbox.sprite_index : get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK);
+        _hbox.mask_index = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK) == -1 ? _hbox.mask_index : get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK);
         _hbox.sprite_index = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_SPRITE) != 0 ? get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_SPRITE) : asset_get("empty_sprite");
         _hbox.img_spd = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_ANIM_SPEED);
         if (_hbox.hsp == 0)
