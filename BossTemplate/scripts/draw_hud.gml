@@ -179,7 +179,7 @@ for (var i = 1; i <= player_count; i++) {
                 
         		xx = dx;
         		yy = hud_y - 56
-        		str = "Damage: " + string(round(player_display_hits[i]));
+        		str = "Score: " + string(round(player_display_hits[i]));
         		draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1)
         		
                 var bonuses_total = array_length(player_bonus_default);
