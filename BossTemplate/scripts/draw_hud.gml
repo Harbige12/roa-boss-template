@@ -192,7 +192,8 @@ for (var i = 1; i <= player_count; i++) {
         		        if (bonus.score[i] != 0 && !player_is_dead[i]) {
                     		xx = dx;
                     		yy = hud_y - min(ease_quadIn(56, 72, end_battle_timer, 16), 72);
-                    		str = bonus.name + " +" + string(bonus.score[i]);
+                    		var str_sign = bonus.score[i] < 0 ? "-" : "+";
+                    		str = bonus.name + " " + str_sign + string(bonus.score[i]);
         		            draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1)
         		        }
         		    }
