@@ -10,6 +10,8 @@ if (is_player_on(player)) {
     }
 }
 
+no_lives_lost = true;
+
 //Boss-specific code
 cpu_target = noone;
 

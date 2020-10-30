@@ -153,11 +153,7 @@ if (dummy_player <= 0)
 str = hard_mode ? "EXPERT" : "NORMAL";
 var col = hard_mode ? c_maroon : c_white;
 
-draw_text_color(xx + 2, yy - 2, str, c_black,c_black,c_black,c_black,1)
-draw_text_color(xx - 2, yy - 2, str, c_black,c_black,c_black,c_black,1)
-draw_text_color(xx + 2 , yy + 2, str, c_black,c_black,c_black,c_black,1)
-draw_text_color(xx - 2, yy + 2, str, c_black,c_black,c_black,c_black,1)
-draw_text_color(xx, yy, str, col,col,col,col,1)
+draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, col, c_black, 1)
 
 for (var i = 1; i <= player_count; i++) {
     with (asset_get("oPlayer")) {
@@ -176,11 +172,7 @@ for (var i = 1; i <= player_count; i++) {
         		var str = other.fake_stock;
         		if (in_training)
         		    str = "X"
-        		draw_text_color(xx + 2, yy - 2, str, c_black,c_black,c_black,c_black,1)
-        		draw_text_color(xx - 2, yy - 2, str, c_black,c_black,c_black,c_black,1)
-        		draw_text_color(xx + 2 , yy + 2, str, c_black,c_black,c_black,c_black,1)
-        		draw_text_color(xx - 2, yy + 2, str, c_black,c_black,c_black,c_black,1)
-        		draw_text_color(xx, yy, str, c_white,c_white,c_white,c_white,1)
+        		draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1)
         		
                 draw_set_font(asset_get("fName"));
                 draw_set_halign(fa_left)
@@ -188,15 +180,28 @@ for (var i = 1; i <= player_count; i++) {
         		xx = dx;
         		yy = hud_y - 56
         		str = "Damage: " + string(round(player_display_hits[i]));
-        		draw_text_color(xx + 2, yy - 2, str, c_black,c_black,c_black,c_black,1)
-        		draw_text_color(xx - 2, yy - 2, str, c_black,c_black,c_black,c_black,1)
-        		draw_text_color(xx + 2 , yy + 2, str, c_black,c_black,c_black,c_black,1)
-        		draw_text_color(xx - 2, yy + 2, str, c_black,c_black,c_black,c_black,1)
-        		draw_text_color(xx, yy, str, c_white,c_white,c_white,c_white,1)
+        		draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1)
+        		
+                var bonuses_total = array_length(player_bonus_default);
+
+        		if (end_battle_phase > -1 && end_battle_phase < bonuses_total) {
+                    draw_set_font(asset_get("fName"));
+                    draw_set_halign(fa_left)
+        		    if (end_battle_timer < 80) {
+        		        var bonus = player_bonus_default[end_battle_phase];
+        		        if (bonus.score[i] != 0 && !player_is_dead[i]) {
+                    		xx = dx;
+                    		yy = hud_y - min(ease_quadIn(56, 72, end_battle_timer, 16), 72);
+                    		str = bonus.name + " +" + string(bonus.score[i]);
+        		            draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1)
+        		        }
+        		    }
+        		}
             }
         }
     }
 }
+user_event(3);
 #define draw_text_trans_outline(_x, _y, str, separ, w, xscale, yscale, angl, text_colour, outline_colour, alph)
 for (i = - 1; i < 2; i++) for (j = -1; j < 2; j++) draw_text_ext_transformed_color(_x+i*2,_y+j*2,str,separ, w, xscale, yscale, angl, outline_colour, outline_colour, outline_colour, outline_colour, 1);
 draw_text_ext_transformed_color(_x,_y,str,separ, w, xscale, yscale, angl, text_colour, text_colour, text_colour, text_colour, 1);

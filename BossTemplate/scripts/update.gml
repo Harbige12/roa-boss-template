@@ -23,47 +23,58 @@ handle_fight();
 if (get_gameplay_time() > 3)
 	handle_camera();
 handle_hitboxes();
+handle_end_of_battle();
 
 
 #define handle_hitboxes
-with asset_get("pHitBox") if "hit_owner" in self { 
-	if (hit_owner.team == -1) {
-		for (var i = 0; i < array_length(can_hit); i++)
-			can_hit[i] = false;
-	}
+with asset_get("pHitBox") if "hit_owner" in self {
 	if (hitbox_timer == 0) {
         with hit_owner {
         	var attack_p = attack;
         	attack = other.attack
             reset_attack_grid(attack);
             custom_behavior(EN_EVENT.SET_ATTACK)
+            with other set_hitboxes(id);
+            reset_attack_grid(attack);
             attack = attack_p;
         }
-        set_hitboxes(id);
     }
     hbox_group = -1;
-    if (place_meeting(x, y, oPlayer)) {
-        if (hit_owner.has_hit_en == 0) {
-                hit_owner.has_hit_en = 1;
-        }
-        else {
-            hit_owner.my_hitboxID = id
-            hit_owner.was_parried = obj_stage_main.was_parried;
-            hit_owner.hit_player_obj = place_meeting(x, y, oPlayer);
-            if (!hit_owner.was_parried)
-            	with hit_owner custom_behavior(EN_EVENT.HIT_PLAYER)
-            else
-            	with hit_owner custom_behavior(EN_EVENT.GOT_PARRIED)
-        }
-    }
-    if (type != 2) {
-        var x_off = hit_owner.hg_x[hbox_num];
-        var y_off = hit_owner.hg_y[hbox_num];
-        x_pos = ((hit_owner.x + x_off * hit_owner.spr_dir) - obj_stage_main.x);
-        y_pos = ((hit_owner.y + y_off) - obj_stage_main.y);
-        hsp = hit_owner.hsp;
-        vsp = hit_owner.vsp;
-        spr_dir = hit_owner.spr_dir;
+    if (instance_exists(hit_owner)) {	
+    	if (hit_owner.team == -1) {
+			for (var i = 0; i < array_length(can_hit); i++)
+				can_hit[i] = false;
+		}
+	    var p_touch = instance_place(x, y, oPlayer)
+	    if (instance_exists(p_touch) && team != -1) {
+	    	if (!p_touch.clone && p_touch.fake_stock > 0 && can_hit[p_touch.player]) {
+	            hit_owner.my_hitboxID = id
+	            hit_owner.hit_player_obj = p_touch
+	            if (!p_touch.perfect_dodged) {
+	        		if (hit_owner.has_hit_en == 0) {
+	            		with hit_owner custom_behavior(EN_EVENT.HIT_PLAYER)
+	            		hit_owner.has_hit_en = 1
+	        		}
+	            }
+	            else {
+	            	if (!hit_owner.was_parried) {
+		            	with hit_owner custom_behavior(EN_EVENT.GOT_PARRIED);
+		            	print_debug("Parried enemy attack!")
+						with obj_stage_main bonus_increment_value("Parry Bonus", p_touch.player, 20);
+						hit_owner.was_parried = true;
+	            	}
+	            }
+	        }
+	    }
+	    if (type != 2) {
+	        var x_off = hit_owner.hg_x[hbox_num];
+	        var y_off = hit_owner.hg_y[hbox_num];
+	        x_pos = ((hit_owner.x + x_off * hit_owner.spr_dir) - obj_stage_main.x);
+	        y_pos = ((hit_owner.y + y_off) - obj_stage_main.y);
+	        hsp = hit_owner.hsp;
+	        vsp = hit_owner.vsp;
+	        spr_dir = hit_owner.spr_dir;
+	    }
     }
 }
 
@@ -125,11 +136,18 @@ if (!the_end)
 //Battle init check
 if (!_init) {
 	user_event(1);
+	if (!player_bonus_default_on)
+		player_bonus_default = array_create(0);
+	if (array_length(player_bonus_extra) > 0)
+		array_copy(player_bonus_default, max(0, array_length(player_bonus_default) - 1), player_bonus_extra, 0,  array_length(player_bonus_extra))
 	_init = true;
 }
 
 //Custom update
 user_event(2);
+
+//Time bonus stuff
+
 
 //Player death check
 if (!in_training) {
@@ -147,20 +165,40 @@ if (!in_training) {
 	}
 	
 	//Battle end check
-	if (end_battle && !the_end) {
-	    find_scores();
-	    the_end = true;
+	if (end_battle) {
+		end_battle_begin()
 	}
 }
 
 //Active boss check
 var i = 0;
+var time_valid = true;
+
 repeat ds_list_size(active_bosses) {
 	if (!instance_exists(active_bosses[| i]))
     	ds_list_remove(active_bosses,active_bosses[| i])
+    else {
+    	if (active_bosses[| i].state == PS_SPAWN || active_bosses[| i].state == PS_DEAD)
+    		time_valid = false;
+    }
     i++;
 }
 
+if (time_valid && player_bonus_default_on && ds_list_size(active_bosses) > 0) {
+	player_time_bonus ++;
+	
+	for (var i = 0; i < array_length(player_bonus_default); i++) {
+		if (player_bonus_default[i].name == "Time Bonus") {
+			for (var j = 0; j < array_length(player_bonus_default[i].score); j++) {
+				player_bonus_default[i].score[j] = max(0, round(ease_linear(500, 0, player_time_bonus, player_time_bonus_max)));
+			}
+			break;
+		}
+	}
+}
+	
+
+//Enemy check
 if (active_enemy_timer <= active_enemy_timer_max) {
 		active_enemy_timer ++;
 	}
@@ -203,7 +241,7 @@ with (oPlayer) {
         }
     }
 	//Points
-	obj_stage_main.player_display_hits[player] = lerp(obj_stage_main.player_display_hits[player], obj_stage_main.player_boss_hits[player], 0.1);
+	obj_stage_main.player_display_hits[player] = lerp(obj_stage_main.player_display_hits[player], obj_stage_main.player_boss_hits[player], 0.5);
     //Fake stocks
     if (fake_stock <= 0) {
         set_state(PS_WRAPPED);
@@ -277,7 +315,7 @@ for (var i = 1; i < 5; i++) { //i is the current player being checked. j is the 
 //Move the dummy player to the last index if we win
 //Else, move it in first.
 
-if (dead_players < player_count) {
+if (dead_players < player_count && !lost_battle) {
 	for (var l = 0; l < ds_list_size(winner); l++) {
 		if (winner[| l] == dummy_player) {
 			ds_list_delete(winner, l);
@@ -378,6 +416,77 @@ clear_button_buffer(PC_SPECIAL_PRESSED);
 clear_button_buffer(PC_STRONG_PRESSED);
 clear_button_buffer(PC_TAUNT_PRESSED);
 
+#define end_battle_begin()
+if (end_battle_phase < 0) {
+	end_battle_phase = 0;
+	if (!lost_battle) {
+		var p_total = player_count - dead_players;
+		if (p_total > 1)
+			bonus_increment_value("Last Hit", player_last_hit, 50);
+		if (hard_mode) {
+			bonus_increment_value("Expert Mode Clear", -1, 50);
+		}
+		with (oPlayer) {
+			if (clone) continue;
+			if (fake_stock <= 0) continue;
+			
+			if (no_lives_lost) {
+				bonus_increment_value("No Lives Lost", player, 100);
+			}
+		}
+	}
+}
+
+#define handle_end_of_battle()
+var bonuses_total = array_length(player_bonus_default);
+
+if (end_battle_phase > -1) {
+	if (bonuses_total == 0 || lost_battle) {
+		if (!the_end) {
+			the_end = true;
+			find_scores();
+		}
+	}
+	else {
+		if (!the_end) {
+			end_battle_timer ++;
+		}
+		var skip = true
+		for (var i = 1; i < array_length(player_bonus_default[end_battle_phase].score); i++) {
+			if (player_bonus_default[end_battle_phase].score[i] != 0) {
+				skip = false;
+			}
+		}
+		
+		if (skip) {
+			end_battle_timer = 120;
+		}
+		if (end_battle_timer == 1) {
+			sound_play(asset_get("mfx_coin"))
+		}
+		if (end_battle_timer == 80 && !skip) {
+			sound_play(asset_get("mfx_confirm"))
+			for (var i = 1; i < array_length(player_bonus_default[end_battle_phase].score); i++) {
+				if (!player_is_dead[i])
+					obj_stage_main.player_boss_hits[i] += player_bonus_default[end_battle_phase].score[i];
+			}
+		}
+	
+		if (end_battle_timer == 120) {
+			
+			if (end_battle_phase >= bonuses_total - 1 && !the_end) {
+				the_end = true;
+				find_scores();
+			}
+			else {
+				end_battle_phase++;
+				end_battle_timer = 0;
+			}
+			
+		}
+	}
+}
+
 
 #define set_hitboxes(_hbox)
 with (obj_stage_main) {
@@ -439,7 +548,18 @@ with (obj_stage_main) {
     if (_hbox.type == 2) {
     	_hbox.image_alpha = 1;
         _hbox.hbox_group = -1;
-        _hbox.mask_index = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK) == -1 ? _hbox.mask_index : get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK);
+        if (get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK) <= 0) {
+	    	_hbox.mask_index = _hbox.sprite_index
+	    	_hbox.uses_sprite_collision = 0;
+        }
+        else {
+        	_hbox.mask_index = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_MASK);
+	    	_hbox.uses_sprite_collision = 1;
+	    	_hbox.image_xscale = _hbox.spr_dir;
+	    	_hbox.image_yscale = 1;
+        }
+    	_hbox.draw_xscale = _hbox.spr_dir;
+    	_hbox.draw_yscale = 1;
         _hbox.sprite_index = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_SPRITE) != 0 ? get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_SPRITE) : asset_get("empty_sprite");
         _hbox.img_spd = get_hitbox_value(_hbox.attack, par, HG_PROJECTILE_ANIM_SPEED);
         if (_hbox.hsp == 0)
@@ -462,6 +582,22 @@ with (obj_stage_main) {
     }
 }
 
+#define bonus_increment_value(_bonus_name, _player, _added_score)
+with (obj_stage_main) {
+	for (var i = 0; i < array_length(player_bonus_default); i++) {
+		if (string_lower(player_bonus_default[i].name) == string_lower(_bonus_name)) {
+			if (_player == -1) {
+				for (var j = 1; j < array_length(player_bonus_default[i].score); j++) {
+					player_bonus_default[i].score[j] += _added_score;
+				}
+			}
+			else {
+				player_bonus_default[i].score[_player] += _added_score;
+			}
+			break;
+		}
+	}
+}
 #define reset_attack_grid(_attack)
 with obj_stage_main { //Main stage script object
     for (var i = 0; i <= 20; i++) {

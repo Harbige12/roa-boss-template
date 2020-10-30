@@ -15,13 +15,50 @@ _init = false;
 
 //End of battle checks
 end_battle = false;
+lost_battle = false;
 end_battle_cooldown = -1;
+end_battle_phase = -1 // -1 = battle hasn't ended yet; >= 0 = total up scores and add bonuses;
+end_battle_timer = 0;
 the_end = false;
 
 //Number of dead players
 player_is_dead = array_create(5, 0);
 player_boss_hits = array_create(5, 0);
 player_display_hits = array_create(5, 0);
+
+//Array of bonuses
+//These are lightweight objects!
+player_bonus_default_on = true;
+player_time_bonus = 0;
+player_time_bonus_max = 3600 * 3; //3 minutes
+player_last_hit = 0;
+
+player_bonus_default[0] = {
+    name : "Time Bonus",
+    score : array_create(5, 0)
+}
+
+player_bonus_default[1] = {
+    name : "Parry Bonus",
+    score : array_create(5, 0)
+}
+
+player_bonus_default[2] = {
+    name : "No Lives Lost",
+    score : array_create(5, 0)
+}
+
+player_bonus_default[3] = {
+    name : "Last Hit",
+    score : array_create(5, 0)
+}
+
+player_bonus_default[4] = {
+    name : "Expert Mode Clear",
+    score : array_create(5, 0)
+}
+
+player_bonus_extra = array_create(0);
 
 //Camera logic
 view_follow = ds_list_create();

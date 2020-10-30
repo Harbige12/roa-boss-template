@@ -1125,6 +1125,7 @@ if (hitpause <= 0) {
 if (move_cooldown[next_attack] <= 0)
 {
     has_hit_en = false;
+    was_parried = false;
     last_attack = attack;
     attack = next_attack;
     reset_attack_grid(attack);
@@ -1450,7 +1451,7 @@ if instance_exists(_hbox) && (!("hit_owner" in _hbox) || _hbox.hit_owner != id) 
                     d_mult -= 0.02 * (alive_players - 2)
         }
     }
-    if (invince_type != _hbox.type) {
+    if (invince_type <= 0 || (invince_type > 0 && invince_type != _hbox.type)) {
         with _hbox {
             if other.hitstun == 0 || kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj > other.hitstun {
                 
@@ -1501,6 +1502,7 @@ if instance_exists(_hbox) && (!("hit_owner" in _hbox) || _hbox.hit_owner != id) 
                 }
                 has_hit_id = other.id;
                 obj_stage_main.player_boss_hits[player] += _hbox.damage * d_mult;
+                obj_stage_main.player_last_hit = player;
                 if (_hbox.type != 2) {
                     old_vsp = vsp;
                     old_hsp = hsp;
@@ -1558,6 +1560,13 @@ with obj_stage_main { //Main stage script object
         for (var i = 0; i <= 60; i++) {
             set_hitbox_value(_attack, w, i, 0);
         }
+    }
+}
+
+#define reset_hitbox_grid(_attack, _hbox_num)
+with obj_stage_main { //Main stage script object if (other.hg_num_hitboxes > 0 && _for_hitbox)
+    for (var i = 0; i <= 60; i++) {
+        set_hitbox_value(_attack, _hbox_num, i, 0);
     }
 }
 
@@ -1721,4 +1730,21 @@ else {
         joy_dir = kb_ang
         joy_dir += random_func(id % 13, bad_di_range, true) * di_dir_sign;
     }
+}
+
+#define bonus_increment_value(_bonus_name, _player, _added_score)
+with (obj_stage_main) {
+	for (var i = 0; i < array_length(player_bonus_default); i++) {
+		if (string_lower(player_bonus_default[i].name) == string_lower(_bonus_name)) {
+			if (_player == -1) {
+				for (var j = 1; j < array_length(player_bonus_default[i].score); j++) {
+					player_bonus_default[i].score[j] += _added_score;
+				}
+			}
+			else {
+				player_bonus_default[i].score[_player] += _added_score;
+			}
+			break;
+		}
+	}
 }
