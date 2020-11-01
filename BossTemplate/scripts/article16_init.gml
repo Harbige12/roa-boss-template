@@ -4,6 +4,7 @@ timer = 0;
 bg_x = x;
 bg_y = y;
 bg_spd = 5;
+hit_player_obj = noone;
 
 sprite_index = asset_get("empty_sprite");
 
@@ -15,7 +16,7 @@ circle_sprite = asset_get("fx_ko_circle");
 with (obj_stage_main) music_stop();
 space_alpha = 1;
 
-depth = 11;
+depth = 30;
 
 with (pHitBox) {
     if (player == obj_stage_main.player) {

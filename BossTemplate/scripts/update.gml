@@ -48,8 +48,6 @@ with asset_get("pHitBox") if "hit_owner" in self {
 	    var p_touch = instance_place(x, y, oPlayer)
 	    if (instance_exists(p_touch) && team != -1) {
 	    	if (!p_touch.clone && p_touch.fake_stock > 0 && can_hit[p_touch.player]) {
-	            hit_owner.my_hitboxID = id
-	            hit_owner.hit_player_obj = p_touch
 	            if (!p_touch.perfect_dodged) {
 	        		if (hit_owner.has_hit_en == 0) {
 	            		with hit_owner custom_behavior(EN_EVENT.HIT_PLAYER)

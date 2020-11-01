@@ -117,6 +117,7 @@ if hitpause <= 0 {
 }
 
 #define ai_update()
+unbashable = invincible > 0 || knockback_adj == 0 || super_armor;
 if hitpause <= 0 {
     state_timer++;
 }
@@ -180,10 +181,10 @@ switch target_behavior {
         }
         break;
     case TR.RANDOM:
-        var target_chance = random_func(id % 40,50, true)
+        var target_chance = random_func(enem_id +40,50, true)
         if (can_target_players || (target_chance > 50 && can_target_enemies)) {
             var i = 0;
-            var player_targ = random_func(id % 50,instance_number(oPlayer), true)
+            var player_targ = random_func(enem_id +50,instance_number(oPlayer), true)
             with oPlayer {
                 if (clone) continue;
                 if i == player_targ  && state != PS_DEAD && fake_stock > 0 other.ai_target = id; else i++;
@@ -191,7 +192,7 @@ switch target_behavior {
         }
         if (can_target_enemies || (target_chance > 50 && can_target_players)) {
             var i = 0;
-            var enemy_targ = random_func(id % 50,instance_number(obj_stage_article), true)
+            var enemy_targ = random_func(enem_id +50,instance_number(obj_stage_article), true)
             with obj_stage_article {
                 if num == 6 {
                     if i == enemy_targ && state != PS_DEAD && in_render other.ai_target = id; else i++;
@@ -1453,37 +1454,34 @@ if instance_exists(_hbox) && (!("hit_owner" in _hbox) || _hbox.hit_owner != id) 
     }
     if (invince_type <= 0 || (invince_type > 0 && invince_type != _hbox.type)) {
         with _hbox {
-            if other.hitstun == 0 || kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj > other.hitstun {
+            if (!other.super_armor && other.knockback_adj != 0) {
+                other.spr_dir = -spr_dir;
+                other.hitstun = kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj;
+                other.hitstun_full = other.hitstun;
+            }
+            other.percent += ceil(damage * d_mult);
+            other.kb_power = kb_value+other.percent*0.12*kb_scale*other.knockback_adj;
+    		if (other.percent < other.hitpoints_max)
+                other.hitpause = hitpause + other.percent*hitpause_growth*0.05 + extra_hitpause;
+            else
+                other.hitpause = 3;
+            other.old_hsp = other.hsp;
+            other.old_vsp = other.vsp;
+            if no_other_hit != 0 other.hit_lockout = no_other_hit + other.hitpause;
+            else other.hit_lockout = other.hitpause + 1 - extra_hitpause;
+            other.hit_sound = sound_effect;
+            other.hit_visual = hit_effect;
+            other.hbox_group = hbox_group;
+            other.flinch_time = (force_flinch == 1 && !other.is_free) || (force_flinch == 2 && other.state == PS_CROUCH) ? 15 : 0;
+            if (dumb_di_mult != 0) {
+                other.dumb_di_mult = dumb_di_mult;
+            }
+            if (camera_shake != -1) {
+                var value_check = other.knockback_adj != 0 ? other.kb_power : kb_value+other.percent*0.12*kb_scale;
+                if ((camera_shake == 0 && value_check >= 10) || camera_shake == 1) {
+                    shake_camera(round(max(value_check, 10)), 5);
+                }
                 
-                if (!other.super_armor && other.knockback_adj != 0) {
-                    other.spr_dir = -spr_dir;
-                    other.hitstun = kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj;
-                    other.hitstun_full = other.hitstun;
-                }
-                other.percent += ceil(damage * d_mult);
-                other.kb_power = kb_value+other.percent*0.12*kb_scale*other.knockback_adj;
-        		if (other.percent < other.hitpoints_max)
-                    other.hitpause = hitpause + other.percent*hitpause_growth*0.05 + extra_hitpause;
-                else
-                    other.hitpause = 3;
-                other.old_hsp = other.hsp;
-                other.old_vsp = other.vsp;
-                if no_other_hit != 0 other.hit_lockout = no_other_hit + other.hitpause;
-                else other.hit_lockout = other.hitpause + 1 - extra_hitpause;
-                other.hit_sound = sound_effect;
-                other.hit_visual = hit_effect;
-                other.hbox_group = hbox_group;
-                other.flinch_time = (force_flinch == 1 && !other.is_free) || (force_flinch == 2 && other.state == PS_CROUCH) ? 15 : 0;
-                if (dumb_di_mult != 0) {
-                    other.dumb_di_mult = dumb_di_mult;
-                }
-                if (camera_shake != -1) {
-                    var value_check = other.knockback_adj != 0 ? other.kb_power : kb_value+other.percent*0.12*kb_scale;
-                    if ((camera_shake == 0 && value_check >= 10) || camera_shake == 1) {
-                        shake_camera(round(max(value_check, 10)), 5);
-                    }
-                    
-                }
             }
         }
         custom_behavior(EN_EVENT.GOT_HIT);
@@ -1587,7 +1585,7 @@ else
     target_start_dir = 1;
     
 var initial_hsp = old_hsp;
-var random_drift_dir = random_func(id % 50, 5, true);
+var random_drift_dir = random_func(enem_id +50, 5, true);
 var perfect_di_dir = 0;
 var bad_di_dir = 0;
 var in_di_dir = 0;
@@ -1642,7 +1640,7 @@ else if (kb_ang > 80 && kb_ang < 100) {
         di_dir_sign = -1;
     }
     else {
-        if (random_func(id % 50, 7, true)) {
+        if (random_func(enem_id +50, 7, true)) {
             perfect_di_dir = (kb_ang + 90);
             di_dir_sign = -1;
         }
@@ -1687,7 +1685,7 @@ else if (di_level == 3) {
     }
 }
 else if (di_level == 4) {
-    if (random_func(id % 50, 9, true)) {
+    if (random_func(enem_id +50, 9, true)) {
         right_down = true;
         joy_dir = 0;
     }
@@ -1719,16 +1717,16 @@ else {
         combo_di_chance = 90;
     }
     var di_chance = combo_di_chance;
-    if (random_func(id % 50, 8, true))
+    if (random_func(enem_id +50, 8, true))
         successsful_di = true;
         
     if (successsful_di) {
         joy_dir = perfect_di_dir
-        joy_dir += random_func(id % 12, good_di_range, true) * di_dir_sign;
+        joy_dir += random_func(enem_id +12, good_di_range, true) * di_dir_sign;
     }
     else {
         joy_dir = kb_ang
-        joy_dir += random_func(id % 13, bad_di_range, true) * di_dir_sign;
+        joy_dir += random_func(enem_id +13, bad_di_range, true) * di_dir_sign;
     }
 }
 

@@ -15,6 +15,7 @@ init_pos = [0,0];
 can_be_grounded = true;
 ignores_walls = false;
 ignores_ground = false;
+unbashable = true;
 
 custom_args = array_create(0);
 
