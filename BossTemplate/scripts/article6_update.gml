@@ -117,7 +117,7 @@ if hitpause <= 0 {
 }
 
 #define ai_update()
-unbashable = invincible > 0 || knockback_adj == 0 || super_armor;
+unbashable = true;
 if hitpause <= 0 {
     state_timer++;
 }
