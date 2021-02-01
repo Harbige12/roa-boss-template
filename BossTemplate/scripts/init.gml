@@ -82,6 +82,7 @@ enemy_health_hud_mode = 0; //0 = show health on HUD; 1 = show health on enemy; 2
 wet = false; //For Wizard
 
 //Custom boss HUD stuff
+hud_draw_default_healthbar = true; //Draws the healthbar.
 hud_healthbar_spr = sprite_get("boss_hp_bar")
 hud_healthbar_back_spr = sprite_get("boss_hp_back")
 hud_percentbar_spr = sprite_get("boss_percent_back")

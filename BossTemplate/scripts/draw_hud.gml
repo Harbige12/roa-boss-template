@@ -102,28 +102,29 @@ repeat ds_list_size(active_bosses) {
         var xx = hbar_x + obj_stage_main.hud_bossname_xoffset;
         var yy = hbar_y + obj_stage_main.hud_bossname_yoffset;
         var str = char_name;
-        
-        if (!show_percent) {
-            draw_set_font(asset_get("medFont"));
-            draw_set_halign(fa_left)
-            
-            draw_sprite(obj_stage_main.hud_healthbar_back_spr, 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
-            draw_sprite_part_ext(obj_stage_main.hud_healthbar_spr, 0, 0, 0, sprite_get_width(obj_stage_main.hud_healthbar_spr) * hbar_fill, 
-                sprite_get_height(obj_stage_main.hud_healthbar_spr), hbar_x + hbar_shake_x, hbar_y + hbar_shake_y, 1, 1, hitpause <= 0 ? hbar_color : c_white, 1);
-            draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1);
-        }
-        else {
-            
-            draw_sprite(obj_stage_main.hud_percentbar_spr, 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
-            draw_set_font(asset_get("roaLBLFont"));
-            draw_set_halign(fa_right)
-            draw_text_trans_outline(hbar_x + obj_stage_main.hud_percent_xoffset, hbar_y + obj_stage_main.hud_percent_yoffset, hbar_percent, 1, -1, 1, 1, 0, c_white, c_black, 1);
-            
-            draw_set_font(asset_get("medFont"));
-            draw_set_halign(fa_left)
-            draw_text_trans_outline(hbar_x + obj_stage_main.hud_percent_xoffset + 6, hbar_y + obj_stage_main.hud_percent_yoffset + 8, "%", 1, -1, 1, 1, 0, c_white, c_black, 1);
-            draw_set_halign(fa_right)
-            draw_text_trans_outline(xx - 32, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1);
+        if (obj_stage_main.hud_draw_default_healthbar) { 
+            if (!show_percent) {
+                draw_set_font(asset_get("medFont"));
+                draw_set_halign(fa_left)
+                
+                draw_sprite(obj_stage_main.hud_healthbar_back_spr, 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
+                draw_sprite_part_ext(obj_stage_main.hud_healthbar_spr, 0, 0, 0, sprite_get_width(obj_stage_main.hud_healthbar_spr) * hbar_fill, 
+                    sprite_get_height(obj_stage_main.hud_healthbar_spr), hbar_x + hbar_shake_x, hbar_y + hbar_shake_y, 1, 1, hitpause <= 0 ? hbar_color : c_white, 1);
+                draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1);
+            }
+            else {
+                
+                draw_sprite(obj_stage_main.hud_percentbar_spr, 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
+                draw_set_font(asset_get("roaLBLFont"));
+                draw_set_halign(fa_right)
+                draw_text_trans_outline(hbar_x + obj_stage_main.hud_percent_xoffset, hbar_y + obj_stage_main.hud_percent_yoffset, hbar_percent, 1, -1, 1, 1, 0, c_white, c_black, 1);
+                
+                draw_set_font(asset_get("medFont"));
+                draw_set_halign(fa_left)
+                draw_text_trans_outline(hbar_x + obj_stage_main.hud_percent_xoffset + 6, hbar_y + obj_stage_main.hud_percent_yoffset + 8, "%", 1, -1, 1, 1, 0, c_white, c_black, 1);
+                draw_set_halign(fa_right)
+                draw_text_trans_outline(xx - 32, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1);
+            }
         }
     }
     i++;
