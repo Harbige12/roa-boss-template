@@ -595,35 +595,40 @@ switch (state) {
     break;
 }
 
-if hitpause <= 0 switch state { //Display Logic
-        case PS_IDLE:
-        case PS_IDLE_AIR:
-            image_index += idle_anim_speed;
-            break;
-            
-        case PS_SPAWN:
-            if (boss_intro_mode == 0)
-                image_index += idle_anim_speed;
-            break;
-        case PS_DASH:
-            image_index += dash_anim_speed;
-            break;
-        case PS_WALK:
-            image_index += walk_anim_speed;
-            break;
-        case PS_JUMPSQUAT:
-            image_index = (state_timer/(2*jump_start_time))*image_number;
-            break;
-        case PS_FIRST_JUMP:
-            image_index = ease_linear(0,image_number,floor(vsp+jump_speed), jump_speed*2);
-            break;
-        case PS_DOUBLE_JUMP:
-            image_index = clamp(ease_linear(0,image_number, state_timer, double_jump_time), 0, image_number - 1);
-            break;
-        case PS_CROUCH:
-            if crouch_timer == 0 image_index = clamp(state_timer/3,0,image_number-1);
-            else image_index = clamp((3-crouch_timer)/3,0,image_number-1);
-            break;
+if hitpause <= 0 {
+	if (enemy_class == 0) {
+		switch state { //Display Logic
+	        case PS_IDLE:
+	        case PS_IDLE_AIR:
+	            image_index += idle_anim_speed;
+	            break;
+	            
+	        case PS_SPAWN:
+	            if (boss_intro_mode == 0)
+	                image_index += idle_anim_speed;
+	            break;
+	        case PS_DASH:
+	            image_index += dash_anim_speed;
+	            break;
+	        case PS_WALK:
+	            image_index += walk_anim_speed;
+	            break;
+	        case PS_JUMPSQUAT:
+	            image_index = (state_timer/(2*jump_start_time))*image_number;
+	            break;
+	        case PS_FIRST_JUMP:
+	            image_index = ease_linear(0,image_number,floor(vsp+jump_speed), jump_speed*2);
+	            break;
+	        case PS_DOUBLE_JUMP:
+	            image_index = clamp(ease_linear(0,image_number, state_timer, double_jump_time), 0, image_number - 1);
+	            break;
+	        case PS_CROUCH:
+	            if crouch_timer == 0 image_index = clamp(state_timer/3,0,image_number-1);
+	            else image_index = clamp((3-crouch_timer)/3,0,image_number-1);
+	            break;
+		}
+	}	
+    switch state { //Display Logic
         case PS_WALK_TURN:
             image_index = clamp(ease_linear(0,image_number, state_timer, walk_turn_time), 0, image_number - 1);
             break;
@@ -646,7 +651,7 @@ if hitpause <= 0 switch state { //Display Logic
             image_index +=  (kb_power / 60);
             break;
     }
-    
+}
 custom_behavior(EN_EVENT.ANIMATION)
 
 if next_attack != -1 attack_start();
@@ -1053,6 +1058,11 @@ if (hitpause <= 0) {
         hsp *= 1-g_frict/5;
     }
     
+    //Gravity
+    if (ag_uses_custom_gravity)
+    	grav = ag_window_custom_gravity[window];
+    
+    
     if (!is_free && ag_category == 1) next_state = PS_IDLE_AIR;
     if (is_free && ag_category == 0) next_state = PS_LAND;
     
@@ -1151,6 +1161,7 @@ with obj_stage_main { //Main stage script object
     other.ag_off_ledge = get_attack_value(_attack,AG_OFF_LEDGE);
     other.ag_sprite = get_attack_value(_attack,AG_SPRITE);
     other.ag_air_sprite = get_attack_value(_attack,AG_AIR_SPRITE);
+    other.ag_uses_custom_gravity = get_attack_value(_attack,AG_USES_CUSTOM_GRAVITY);
     other.hg_num_hitboxes = get_num_hitboxes(_attack);
     other.ag_hurtbox_sprite = get_attack_value(_attack,AG_HURTBOX_SPRITE);
     other.ag_hurtbox_air_sprite = get_attack_value(_attack,AG_HURTBOX_AIR_SPRITE);
@@ -1160,6 +1171,7 @@ with obj_stage_main { //Main stage script object
         other.ag_window_anim_frames[i] = get_window_value(_attack,i,AG_WINDOW_ANIM_FRAMES);
         other.ag_window_anim_frame_start[i] = get_window_value(_attack,i,AG_WINDOW_ANIM_FRAME_START);
         other.ag_window_invincibility[i] = get_window_value(_attack,i,AG_WINDOW_INVINCIBILITY);
+        other.ag_window_custom_gravity[i] = get_window_value(_attack,i,AG_WINDOW_CUSTOM_GRAVITY);
         if get_window_value(_attack,i,AG_WINDOW_HAS_SFX) {
             other.ag_window_has_sfx[i] = get_window_value(_attack,i,AG_WINDOW_HAS_SFX);
             other.ag_window_sfx[i] = get_window_value(_attack,i,AG_WINDOW_SFX);
