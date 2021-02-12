@@ -1533,9 +1533,6 @@ if instance_exists(_hbox) && (!("hit_owner" in _hbox) || _hbox.hit_owner != id) 
             if (_hbox.hitstun_factor != -1)
                 sound_play(hit_sound);
         }
-        if (_hbox.type == 2 && _hbox.enemies == 0) {
-            instance_destroy(_hbox);
-        }
         has_hit = 1;
         if (!is_boss) {
             with (obj_stage_main) {
@@ -1545,6 +1542,9 @@ if instance_exists(_hbox) && (!("hit_owner" in _hbox) || _hbox.hit_owner != id) 
         }
         orig_knock = kb_power;
         custom_behavior(EN_EVENT.GOT_HIT);
+        if (_hbox.type == 2 && _hbox.enemies == 0) {
+            instance_destroy(_hbox);
+        }
     }
 }
 #define reset_attack_grid(_attack)
