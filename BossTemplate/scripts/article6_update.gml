@@ -1496,7 +1496,7 @@ if instance_exists(_hbox) && (!("hit_owner" in _hbox) || _hbox.hit_owner != id) 
                 
             }
         }
-        custom_behavior(EN_EVENT.GOT_HIT);
+        last_hitbox = _hbox;
         kb_angle = get_hitbox_angle(_hbox);
         if (kb_angle == 361) {
             if (is_free)
@@ -1544,6 +1544,7 @@ if instance_exists(_hbox) && (!("hit_owner" in _hbox) || _hbox.hit_owner != id) 
             }
         }
         orig_knock = kb_power;
+        custom_behavior(EN_EVENT.GOT_HIT);
     }
 }
 #define reset_attack_grid(_attack)
