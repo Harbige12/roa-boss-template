@@ -1,4 +1,6 @@
 //
+if (hit_player_obj.clone || hit_player_obj.custom_clone)
+    exit;
 if (!in_training) {
     hit_player_obj.fake_stock -= 1;
     hit_player_obj.no_lives_lost = false;

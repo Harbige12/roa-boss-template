@@ -163,8 +163,7 @@ switch target_behavior {
         var dist = 0;
         if (can_target_players) {
             with oPlayer {
-                if (clone) continue;
-                if point_distance(x, y, other.x, other.y) >= dist && state != PS_DEAD && fake_stock > 0 {
+                if point_distance(x, y, other.x, other.y) >= dist && state != PS_DEAD && fake_stock_check(id) {
                     other.ai_target = id;
                     dist = point_distance(x, y, other.x, other.y);
                 }
@@ -172,7 +171,6 @@ switch target_behavior {
         }
         if (can_target_enemies) {
             with obj_stage_article if num == 6 {
-                if (clone) continue;
                 if point_distance(x, y, other.x, other.y) >= dist && state != PS_DEAD && in_render {
                     other.ai_target = id;
                     dist = point_distance(x, y, other.x, other.y);
@@ -186,8 +184,7 @@ switch target_behavior {
             var i = 0;
             var player_targ = random_func(enem_id +50,instance_number(oPlayer), true)
             with oPlayer {
-                if (clone) continue;
-                if i == player_targ  && state != PS_DEAD && fake_stock > 0 other.ai_target = id; else i++;
+                if i == player_targ  && state != PS_DEAD && fake_stock_check(id)  other.ai_target = id; else i++;
             }
         }
         if (can_target_enemies || (target_chance > 50 && can_target_players)) {
@@ -204,8 +201,7 @@ switch target_behavior {
         var player_damage = 999;
         if (can_target_players) {
             with oPlayer {
-                if (clone) continue;
-                if damage <= player_damage && state != PS_DEAD && fake_stock > 0  {
+                if damage <= player_damage && state != PS_DEAD && fake_stock_check(id)  {
                     other.ai_target = id;
                     player_damage = damage;
                 }
@@ -224,8 +220,7 @@ switch target_behavior {
         var player_damage = 0;
         if (can_target_players) {
             with oPlayer {
-                if (clone) continue;
-                if damage >= player_damage && state != PS_DEAD && fake_stock > 0   {
+                if damage >= player_damage && state != PS_DEAD && fake_stock_check(id)   {
                     other.ai_target = id;
                     player_damage = damage;
                 }
@@ -246,8 +241,7 @@ switch target_behavior {
         var dist = room_width * room_height;
         if (can_target_players) {
             with oPlayer {
-                if (clone) continue;
-                if point_distance(x, y, other.x, other.y) <= dist && state != PS_DEAD && fake_stock > 0 {
+                if point_distance(x, y, other.x, other.y) <= dist && fake_stock_check(id)  {
                     other.ai_target = id;
                     dist = point_distance(x, y, other.x, other.y);
                 }
@@ -1759,3 +1753,6 @@ with (obj_stage_main) {
 		}
 	}
 }
+
+#define fake_stock_check(_player_id)
+return ((("fake_stock" in _player_id) && _player_id.fake_stock > 0) || _player_id.clone || _player_id.custom_clone);

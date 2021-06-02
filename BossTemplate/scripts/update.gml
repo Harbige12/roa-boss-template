@@ -47,7 +47,7 @@ with asset_get("pHitBox") if "hit_owner" in self {
 		}
 	    var p_touch = instance_place(x, y, oPlayer)
 	    if (instance_exists(p_touch) && team != -1) {
-	    	if (!p_touch.clone && p_touch.fake_stock > 0 && can_hit[p_touch.player]) {
+	    	if (((("fake_stock" in self) && p_touch.fake_stock > 0) || clone || custom_clone) && can_hit[p_touch.player]) {
 	            if (!p_touch.perfect_dodged) {
 	        		if (hit_owner.has_hit_en == 0) {
 	            		with hit_owner custom_behavior(EN_EVENT.HIT_PLAYER)
@@ -205,17 +205,26 @@ if (active_enemy_timer <= active_enemy_timer_max) {
 //CPU player handling
 var controlled_players = 0;
 with (oPlayer) {
-    if (clone) continue;
+    if (clone || custom_clone) continue;
     if (get_gameplay_time() == 2) ds_list_add(other.view_follow, id);
 	if (!variable_instance_exists(id, "temp_level")) {
 		controlled_players ++;
 	}
 }
 
+if (get_match_setting(SET_TEAMS) == 1) {
+    with (oPlayer) {
+    	if (player != obj_stage_main.dummy_player)
+    		set_player_team( player, 1 );
+    	else
+    		set_player_team( player, 2 );
+    }
+}
+
 with (oPlayer) {
 	if ("num" in self)
 		continue;
-    if (clone)
+    if (clone || custom_clone)
         continue;
 	if (controlled_players <= 1) {
 	    if (obj_stage_main.dummy_player <= 0) {
@@ -229,15 +238,6 @@ with (oPlayer) {
 	        }
 	    }
 	}
-	if (get_match_setting(SET_TEAMS) == 1) {
-        with (oPlayer) {
-    		if (clone) continue;
-        	if (player != obj_stage_main.dummy_player)
-        		set_player_team( player, 1 );
-        	else
-        		set_player_team( player, 2 );
-        }
-    }
 	//Points
 	obj_stage_main.player_display_hits[player] = lerp(obj_stage_main.player_display_hits[player], obj_stage_main.player_boss_hits[player], 0.5);
     //Fake stocks
@@ -345,9 +345,7 @@ with (obj_stage_article) {
 
 with (oPlayer) {
     if (clone) continue;
-	if (fake_stock > 0) {
-		if (other.textbox_taunting)
-			continue;
+	if ((("fake_stock" in self) && fake_stock > 0) || custom_clone || clone) {
 		hsp = 0;
 		state = PS_SPAWN;
 		can_move = false;
@@ -425,7 +423,7 @@ if (end_battle_phase < 0) {
 			bonus_increment_value("Expert Mode Clear", -1, 50);
 		}
 		with (oPlayer) {
-			if (clone) continue;
+			if (clone || custom_clone) continue;
 			if (fake_stock <= 0) continue;
 			
 			if (no_lives_lost) {
