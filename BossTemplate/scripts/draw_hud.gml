@@ -158,7 +158,7 @@ draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, col, c_black, 1)
 
 for (var i = 1; i <= player_count; i++) {
     with (asset_get("oPlayer")) {
-        if (clone)
+        if (clone || custom_clone || ("fake_stock" not in self))
             continue;
         if (other.dummy_player != i && player == i) {
             with (obj_stage_main) {

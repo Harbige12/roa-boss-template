@@ -47,7 +47,7 @@ with asset_get("pHitBox") if "hit_owner" in self {
 		}
 	    var p_touch = instance_place(x, y, oPlayer)
 	    if (instance_exists(p_touch) && team != -1) {
-	    	if (((("fake_stock" in self) && p_touch.fake_stock > 0) || clone || custom_clone) && can_hit[p_touch.player]) {
+	    	if (((("fake_stock" in p_touch) && p_touch.fake_stock > 0) || p_touch.clone || p_touch.custom_clone) && can_hit[p_touch.player]) {
 	            if (!p_touch.perfect_dodged) {
 	        		if (hit_owner.has_hit_en == 0) {
 	            		with hit_owner custom_behavior(EN_EVENT.HIT_PLAYER)
@@ -205,7 +205,7 @@ if (active_enemy_timer <= active_enemy_timer_max) {
 //CPU player handling
 var controlled_players = 0;
 with (oPlayer) {
-    if (clone || custom_clone) continue;
+    if (clone || custom_clone || ("fake_stock" not in self)) continue;
     if (get_gameplay_time() == 2) ds_list_add(other.view_follow, id);
 	if (!variable_instance_exists(id, "temp_level")) {
 		controlled_players ++;
@@ -224,7 +224,7 @@ if (get_match_setting(SET_TEAMS) == 1) {
 with (oPlayer) {
 	if ("num" in self)
 		continue;
-    if (clone || custom_clone)
+    if (clone || custom_clone || ("fake_stock" not in self))
         continue;
 	if (controlled_players <= 1) {
 	    if (obj_stage_main.dummy_player <= 0) {
@@ -241,7 +241,7 @@ with (oPlayer) {
 	//Points
 	obj_stage_main.player_display_hits[player] = lerp(obj_stage_main.player_display_hits[player], obj_stage_main.player_boss_hits[player], 0.5);
     //Fake stocks
-    if (fake_stock <= 0) {
+    if (("fake_stock" in self) && fake_stock <= 0) {
         set_state(PS_WRAPPED);
         cpu_target_timer --
             
@@ -344,8 +344,7 @@ with (obj_stage_article) {
 }
 
 with (oPlayer) {
-    if (clone) continue;
-	if ((("fake_stock" in self) && fake_stock > 0) || custom_clone || clone) {
+	if ((("fake_stock" in self) && fake_stock > 0) || ("fake_stock" not in self)) {
 		hsp = 0;
 		state = PS_SPAWN;
 		can_move = false;
@@ -423,7 +422,7 @@ if (end_battle_phase < 0) {
 			bonus_increment_value("Expert Mode Clear", -1, 50);
 		}
 		with (oPlayer) {
-			if (clone || custom_clone) continue;
+			if (clone || custom_clone || ("fake_stock" not in self)) continue;
 			if (fake_stock <= 0) continue;
 			
 			if (no_lives_lost) {

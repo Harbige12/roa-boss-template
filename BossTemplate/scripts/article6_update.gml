@@ -1755,4 +1755,4 @@ with (obj_stage_main) {
 }
 
 #define fake_stock_check(_player_id)
-return ((("fake_stock" in _player_id) && _player_id.fake_stock > 0) || _player_id.clone || _player_id.custom_clone);
+return ((("fake_stock" in _player_id) && _player_id.fake_stock > 0) || ("fake_stock" not in _player_id));

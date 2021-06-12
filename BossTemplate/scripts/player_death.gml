@@ -1,5 +1,5 @@
 //
-if (hit_player_obj.clone || hit_player_obj.custom_clone)
+if (hit_player_obj.clone || hit_player_obj.custom_clone || ("fake_stock" not in hit_player_obj))
     exit;
 if (!in_training) {
     hit_player_obj.fake_stock -= 1;
